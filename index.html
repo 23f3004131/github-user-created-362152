@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub User Info</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Fetch GitHub User Creation Date</h1>
+        <form id="githubForm" class="row g-3">
+            <div class="col-auto">
+                <input type="text" id="githubUsername" class="form-control" placeholder="Enter GitHub Username" required>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary mb-3">Fetch</button>
+            </div>
+        </form>
+        <div id="result" class="mt-4"></div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('githubForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const username = document.getElementById('githubUsername').value.trim();
+                if (username) {
+                    fetch(`https://api.github.com/users/${username}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('User not found');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            document.getElementById('result').innerHTML = `
+                                <div class="alert alert-success" role="alert">
+                                    GitHub account creation date: ${new Date(data.created_at).toISOString().split('T')[0]}
+                                </div>
+                            `;
+                        })
+                        .catch(error => {
+                            document.getElementById('result').innerHTML = `
+                                <div class="alert alert-danger" role="alert">
+                                    Error: ${error.message}
+                                </div>
+                            `;
+                        });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
